@@ -334,7 +334,7 @@ const rightPanel = BUI.Component.create<BUI.Panel>(() => {
     alert("You are awesome 😏");
   };
   return BUI.html`
-    <bim-panel label="Right Panel" id="right-panel" icon="mynaui:panel-right-solid">
+    <bim-panel label="Right Panel" id="right-panel" icon="mynaui:panel-right-solid" style="width: 20rem">
       <bim-panel-section label="Panel Section" icon="solar:settings-bold">
         <bim-button label="Button With Nestings">
           <bim-context-menu>
@@ -526,7 +526,7 @@ grid.layouts = {
       "ribbon ribbon ribbon" auto
       "leftPanel viewport rightPanel" 1fr
       "leftPanel bottomPanel bottomPanel" auto
-      / auto 1fr 20rem
+      / auto 1fr auto
     `,
     tabletTemplate: `
       "ribbon ribbon ribbon" auto
