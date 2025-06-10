@@ -38,6 +38,10 @@ export type GridLayoutsDefinition<T extends GridLayoutComponents> = {
     screenRules?: {
       [P in ExtractName<T[K][number]>]?: DeviceType;
     };
+    sizes?: {
+      mobile?: number;
+      tablet?: number;
+    };
   };
 };
 

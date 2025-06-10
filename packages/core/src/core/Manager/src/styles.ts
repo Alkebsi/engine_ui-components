@@ -24,6 +24,7 @@ const scrollbar = css`
       width: 0.2rem;
       height: 0.2rem;
     }
+  }
 `;
 
 const globalStyles = css`

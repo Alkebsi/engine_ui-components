@@ -1,6 +1,6 @@
 // This is the solution provided on this stackoverflow: https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser
 /**
- * A fuction that returns true if the device used is mobile (excluding tablets).
+ * A function that returns true if the device used is mobile (excluding tablets).
  *
  * @return {boolean}
  */
@@ -21,7 +21,7 @@ const isMobile = () => {
 };
 
 /**
- * A fuction that returns true if the device has a touch input and dosn't have any
+ * A function that returns true if the device has a touch input and dosn't have any
  * other input methods (mostly a mouse) regardless of it's type or screen size.
  *
  * @return {boolean}
@@ -31,24 +31,39 @@ const hasTouchScreenOnly = () => {
 };
 
 /**
- * This one will return "desktop" | "tablet" | "mobile" depending on the width of the screen.
- * It uses some common break points for each screen type, just as follows:
- * 480px or less: Mobile Device
- * 481px - 768px: iPads, Tablets
- * 769px or more: Laptops and bigger devices
+ * Returns "desktop", "tablet", or "mobile" depending on the width of the screen.
+ *
+ * Breakpoints:
+ * - 480px or less: Mobile Device
+ * - 481px - 768px: iPads, Tablets
+ * - 769px or more: Laptops and bigger devices
+ *
+ * @param {Object} [options] - Optional breakpoints.
+ * @param {number} [options.mobile=480] - The maximum width for mobile devices.
+ * @param {number} [options.tablet=768] - The maximum width for tablet devices.
+ * @returns {"mobile" | "tablet" | "desktop"}
+ *
+ * @example
+ * screenType(); // Uses defaults: mobile 480, tablet 768
+ * screenType({ mobile: 500 }); // Uses mobile 500, tablet 768
+ * screenType({ tablet: 800 }); // Uses mobile 480, tablet 800
+ * screenType({ mobile: 400, tablet: 700 }); // Uses mobile 400, tablet 700
  */
-const screenType = () => {
+const screenType = ({
+  mobile,
+  tablet,
+}: { mobile?: number; tablet?: number } = {}) => {
+  const mobileBreakpoint = mobile ?? 480;
+  const tabletBreakpoint = tablet ?? 768;
   const width = window.innerWidth;
-  const mobile = 480;
-  const tablet = 768;
 
-  if (width <= mobile) {
+  if (width <= mobileBreakpoint) {
     return "mobile";
   }
-  if (width > mobile && width <= tablet) {
+  if (width > mobileBreakpoint && width <= tabletBreakpoint) {
     return "tablet";
   }
-  if (width > tablet) {
+  if (width > tabletBreakpoint) {
     return "desktop";
   }
   throw new Error("The window isn't detected or have a strange size");

@@ -551,6 +551,10 @@ grid.layouts = {
       rightPanel: "desktop",
       bottomPanel: ["desktop", "tablet"],
     },
+    sizes: {
+      mobile: 480, // you also need to change the values at example.html @media
+      tablet: 768, // you also need to change the values at example.html @media
+    },
   },
 };
 

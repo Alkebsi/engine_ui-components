@@ -145,7 +145,9 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
       const element = elementsMap[area] as Panel;
       if (!element) continue;
 
-      const currentScreen = screenType();
+      // Use layout's sizes if available
+      const layout = this.layouts[this.layout!];
+      const currentScreen = screenType(layout?.sizes);
       const isAllowed =
         (Array.isArray(allowedScreens) &&
           allowedScreens.includes(currentScreen)) ||
@@ -178,8 +180,8 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
       );
     }
 
-    // Set grid template based on screen type
-    const currentScreen = screenType();
+    // Set grid template based on screen type and layout's sizes
+    const currentScreen = screenType(layout.sizes);
     let template = layout.template;
 
     if (currentScreen === "mobile") {
@@ -199,7 +201,8 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
     this._onLayoutChange = new Event("layoutchange");
 
     const observer = new ResizeObserver(() => {
-      const currentScreenType = screenType();
+      const layout = this.layouts[this.layout!];
+      const currentScreenType = screenType(layout?.sizes);
       if (this._lastScreenType !== currentScreenType) {
         this._lastScreenType = currentScreenType;
         this.layouts = { ...this._layouts };
