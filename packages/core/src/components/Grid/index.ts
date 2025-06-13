@@ -137,29 +137,41 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
     return uniqueAreas;
   }
 
-  private applyScreenRules(
-    elementsMap: Record<string, HTMLElement>,
-    screenRules: Record<string, string | string[]>,
-  ) {
-    for (const [area, allowedScreens] of Object.entries(screenRules)) {
-      const element = elementsMap[area] as Panel;
-      if (!element) continue;
+  // Used to hide elements if they were not added to the mobile or tablet templates
+  private applyScreenRules(elementsMap: Record<string, HTMLElement>) {
+    const layout = this.layouts[this.layout!];
+    if (!layout) return;
 
-      // Use layout's sizes if available
-      const layout = this.layouts[this.layout!];
-      const currentScreen = screenType(layout?.sizes);
-      const isAllowed =
-        (Array.isArray(allowedScreens) &&
-          allowedScreens.includes(currentScreen)) ||
-        (typeof allowedScreens === "string" &&
-          allowedScreens === currentScreen);
+    for (const [area, element] of Object.entries(elementsMap)) {
+      if (!(element instanceof Panel)) continue;
 
-      if (isAllowed) {
+      // Check if the area is present in either mobileTemplate or tabletTemplate
+      const currentScreen = screenType(layout.sizes || {});
+      let isVisibleOnMobile = false;
+      let isVisibleOnTablet = false;
+
+      if (layout.mobileTemplate && layout.mobileTemplate.includes(area)) {
+        isVisibleOnMobile = true;
+      }
+
+      if (layout.tabletTemplate && layout.tabletTemplate.includes(area)) {
+        isVisibleOnTablet = true;
+      }
+
+      // Apply visibility based on current screen type
+      if (currentScreen === "mobile") {
+        element.style.display = isVisibleOnMobile ? "" : "none";
+        element.activationButton.style.display = isVisibleOnMobile
+          ? ""
+          : "none";
+      } else if (currentScreen === "tablet") {
+        element.style.display = isVisibleOnTablet ? "" : "none";
+        element.activationButton.style.display = isVisibleOnTablet
+          ? ""
+          : "none";
+      } else {
         element.style.removeProperty("display");
         element.activationButton.style.removeProperty("display");
-      } else {
-        element.style.setProperty("display", "none");
-        element.activationButton.style.setProperty("display", "none");
       }
     }
   }
@@ -172,12 +184,9 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
 
     const elementsMap = layout.elements as Record<string, HTMLElement>;
 
-    // Apply screen rules if defined
-    if (layout.screenRules && typeof layout.screenRules === "object") {
-      this.applyScreenRules(
-        elementsMap,
-        layout.screenRules as Record<string, string | string[]>,
-      );
+    // Apply screen rules if there is mobile or tablet (or both) templates
+    if (layout.mobileTemplate || layout.tabletTemplate) {
+      this.applyScreenRules(elementsMap);
     }
 
     // Set grid template based on screen type and layout's sizes
