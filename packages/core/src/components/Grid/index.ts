@@ -160,20 +160,18 @@ export class Grid<T extends GridLayoutComponents = {}> extends LitElement {
 
       // Apply visibility based on current screen type
       if (currentScreen === "mobile") {
-        element.style.display = isVisibleOnMobile ? "" : "none";
-        element.activationButton.style.display = isVisibleOnMobile
-          ? ""
-          : "none";
+        this.hidePanel(element, isVisibleOnMobile);
       } else if (currentScreen === "tablet") {
-        element.style.display = isVisibleOnTablet ? "" : "none";
-        element.activationButton.style.display = isVisibleOnTablet
-          ? ""
-          : "none";
+        this.hidePanel(element, isVisibleOnTablet);
       } else {
-        element.style.removeProperty("display");
-        element.activationButton.style.removeProperty("display");
+        this.hidePanel(element, true);
       }
     }
+  }
+
+  private hidePanel(element: Panel, visibility: boolean) {
+    element.hidden = !visibility;
+    element.floating = !visibility;
   }
 
   private setCSSGridTemplate() {

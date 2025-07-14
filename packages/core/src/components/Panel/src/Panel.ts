@@ -28,6 +28,18 @@ export class Panel extends LitElement implements HasName, HasValue {
         opacity: 0;
       }
 
+      :host([floating]) {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(3px);
+        padding: var(--bim-ui_size-xl);
+      }
+
       .parent {
         display: flex;
         flex: 1;
@@ -47,6 +59,22 @@ export class Panel extends LitElement implements HasName, HasValue {
 
       :host([header-hidden]) .parent bim-label {
         display: none;
+      }
+
+      :host([floating]) .parent {
+        background-color: var(--bim-ui_bg-base);
+        border-radius: var(--bim-ui_size-4xs);
+      }
+
+      .closing-btn {
+        --bim-icon--fz: var(--bim-ui_size-base);
+        position: fixed;
+        top: var(--bim-ui_size-xl);
+        right: var(--bim-ui_size-xl);
+        width: 3rem;
+        height: 3rem;
+        border: none !important;
+        background: none !important;
       }
 
       .sections {
@@ -112,6 +140,22 @@ export class Panel extends LitElement implements HasName, HasValue {
    */
   @property({ type: String, reflect: true })
   label?: string;
+
+  /**
+   * Determines whether the panel should float & fill the screen or be a normal grid element.
+   * When set to `true`, the panel will be displayed when its activation button is clicked.
+   * Unlike regular panels, this one does not affect the layout of the grid and displays in full screen.
+   *
+   * @type {boolean}
+   * @default false
+   * @example <bim-panel floating></bim-panel>
+   * @example
+   * const panel = document.createElement('bim-panel');
+   * panel.floating = true;
+   * document.body.appendChild(panel);
+   */
+  @property({ type: Boolean, reflect: true })
+  floating?: boolean;
 
   readonly onValueChange = new Event("change");
 
@@ -218,7 +262,7 @@ export class Panel extends LitElement implements HasName, HasValue {
 
   readonly activationButton: Button = document.createElement("bim-button");
 
-  private animatePanles() {
+  animatePanels() {
     const animationKeyframes = [
       {
         maxHeight: "100vh",
@@ -241,7 +285,6 @@ export class Panel extends LitElement implements HasName, HasValue {
       duration: 300,
       easing: "cubic-bezier(0.65, 0.05, 0.36, 1)",
       direction: this.hidden ? "normal" : "reverse",
-      fill: "forwards",
     });
   }
 
@@ -250,7 +293,7 @@ export class Panel extends LitElement implements HasName, HasValue {
     this.activationButton.active = !this.hidden;
     this.activationButton.onclick = () => {
       this.hidden = !this.hidden;
-      this.animatePanles();
+      this.animatePanels();
     };
   }
 
@@ -286,8 +329,15 @@ export class Panel extends LitElement implements HasName, HasValue {
     this.activationButton.label = this.label || this.name;
     this.activationButton.tooltipTitle = this.label || this.name;
 
+    const closeFloatingPanelsTemplate = html`<bim-button
+      class="closing-btn"
+      icon="material-symbols:cancel-rounded"
+      @click=${() => this.activationButton.click()}
+    />`;
+
     return html`
       <div class="parent">
+        ${this.floating ? closeFloatingPanelsTemplate : null}
         ${this.label || this.name || this.icon
           ? html`<bim-label .icon=${this.icon}>${this.label}</bim-label>`
           : null}
